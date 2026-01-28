@@ -1,0 +1,44 @@
+[project]
+name = "todo-app"
+version = "0.1.0"
+description = "Phase I: In-memory Python console todo application - Spec-driven development hackathon"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+todo = "todo_app.main:main"
+
+[dependency-groups]
+dev = [
+    "black>=25.12.0",
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "ruff>=0.14.10",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = []
+
+[tool.black]
+line-length = 100
+target-version = ["py313"]
