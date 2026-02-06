@@ -58,3 +58,4 @@ prn
 
 # Claude Code local settings (optional - remove if you want to track)
 .claude/settings.local.json
+*.log
