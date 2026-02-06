@@ -8,6 +8,7 @@ import { TaskEditModal } from "@/components/tasks/TaskEditModal";
 import { DeleteConfirmDialog } from "@/components/tasks/DeleteConfirmDialog";
 import { Button } from "@/components/ui/Button";
 import { useTasks } from "@/hooks/useTasks";
+import ChatbotIcon from "../components/ChatbotIcon";
 
 export default function DashboardPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -85,6 +86,9 @@ export default function DashboardPage() {
         onClose={() => setDeletingTask(null)}
         onConfirm={deleteTask}
       />
+
+      {/* AI Chatbot (Phase-3) */}
+      <ChatbotIcon />
     </PageContainer>
   );
 }

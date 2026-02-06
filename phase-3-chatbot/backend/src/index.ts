@@ -6,6 +6,8 @@ import { auth } from "./auth.js";
 import { errorHandler } from "./middleware/error.js";
 import { authRateLimiter, apiRateLimiter } from "./middleware/rateLimit.js";
 import taskRouter from "./routes/tasks.js";
+import chatRouter from "./routes/chat.js";
+import mcpRouter from "./routes/mcp.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -43,11 +45,13 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({
     name: "TodoFlow API",
-    version: "1.0.0",
+    version: "2.0.0", // Phase-3: AI Chatbot
     endpoints: {
       health: "/health",
       auth: "/api/auth/*",
-      tasks: "/api/tasks"
+      tasks: "/api/tasks",
+      chat: "/api/chat/:userId",
+      conversations: "/api/conversations/:userId"
     }
   });
 });
@@ -59,6 +63,12 @@ app.get("/health", (req, res) => {
 
 // Task routes with rate limiting
 app.use("/api/tasks", apiRateLimiter, taskRouter);
+
+// Chat routes (Phase-3) with rate limiting
+app.use(apiRateLimiter, chatRouter);
+
+// MCP tool routes (Phase-3) - called by AI service
+app.use("/mcp", mcpRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

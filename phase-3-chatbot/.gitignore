@@ -2,6 +2,18 @@
 node_modules/
 .pnpm-store/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+ai-service/venv/
+*.egg-info/
+dist/
+*.whl
+
 # Next.js
 .next/
 out/
@@ -17,6 +29,8 @@ build/
 frontend/.env
 frontend/.env.local
 frontend/.env.*.local
+ai-service/.env
+ai-service/.env.local
 
 # IDE
 .idea/
@@ -44,3 +58,4 @@ prn
 
 # Claude Code local settings (optional - remove if you want to track)
 .claude/settings.local.json
+*.log
