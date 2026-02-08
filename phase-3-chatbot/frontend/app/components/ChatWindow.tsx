@@ -18,6 +18,7 @@ import {
   fetchConversationMessages,
   sendMessage,
 } from "../../lib/chatApi";
+import { useSession } from "@/lib/auth";
 
 interface ChatWindowProps {
   onClose: () => void;
@@ -35,6 +36,7 @@ interface ChatMessage {
  * Displays conversation history and handles message input
  */
 function ChatWindow({ onClose }: ChatWindowProps) {
+  const { data: session, isPending } = useSession();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -57,11 +59,13 @@ function ChatWindow({ onClose }: ChatWindowProps) {
 
   const loadConversations = async () => {
     try {
-      // TODO: Get userId from auth session (T028)
-      // For now, using placeholder
-      const userId = "user_placeholder";
+      if (!session?.user?.id) {
+        console.error("User not authenticated");
+        setError("Please sign in to access chat");
+        return;
+      }
 
-      const convs = await fetchConversationHistory(userId);
+      const convs = await fetchConversationHistory(session.user.id);
       setConversations(convs);
     } catch (error: any) {
       console.error("Failed to load conversations:", error);
@@ -72,9 +76,13 @@ function ChatWindow({ onClose }: ChatWindowProps) {
   const loadConversationHistory = async (convId: string) => {
     try {
       setIsLoading(true);
-      const userId = "user_placeholder"; // TODO: Get from auth
 
-      const msgs = await fetchConversationMessages(userId, convId);
+      if (!session?.user?.id) {
+        setError("Please sign in to access chat");
+        return;
+      }
+
+      const msgs = await fetchConversationMessages(session.user.id, convId);
       setMessages(
         msgs.map((msg: any) => ({
           id: Math.random().toString(),
@@ -121,11 +129,16 @@ function ChatWindow({ onClose }: ChatWindowProps) {
     setMessages((prev) => [...prev, assistantMessage]);
 
     try {
-      const userId = "user_placeholder"; // TODO: Get from auth
+      if (!session?.user?.id) {
+        setError("Please sign in to send messages");
+        setIsLoading(false);
+        setMessages((prev) => prev.filter((msg) => msg.id !== assistantMessageId));
+        return;
+      }
 
       // Stream AI response
       await sendMessage(
-        userId,
+        session.user.id,
         message,
         conversationId,
         // onToken callback - append to streaming message
@@ -172,6 +185,36 @@ function ChatWindow({ onClose }: ChatWindowProps) {
     setConversationId(convId);
     setShowConversations(false);
   };
+
+  // Show loading state while session is being fetched
+  if (isPending) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="text-4xl mb-2">⏳</div>
+          <p className="text-sm text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if user is not authenticated
+  if (!session?.user) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8">
+          <div className="text-6xl mb-4">🔒</div>
+          <h3 className="text-lg font-semibold text-gray-800 mb-2">Authentication Required</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Please sign in to use the chat feature
+          </p>
+          <button onClick={onClose} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
