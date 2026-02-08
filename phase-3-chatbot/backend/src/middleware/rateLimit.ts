@@ -1,10 +1,30 @@
 import rateLimit from "express-rate-limit";
 import { Request, Response } from "express";
 
+// Helper: Get client IP (IPv6 safe)
+function getClientIp(req: Request): string {
+  // Check x-forwarded-for header
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = (forwarded as string).split(',');
+    return ips[0].trim();
+  }
+
+  // Check x-real-ip header
+  const realIp = req.headers['x-real-ip'];
+  if (realIp) {
+    return realIp as string;
+  }
+
+  // Fallback to socket remote address
+  return req.socket.remoteAddress || 'unknown';
+}
+
 // Rate limiter for auth endpoints (stricter)
 export const authRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 10, // 10 requests per minute per IP
+  keyGenerator: (req: Request) => getClientIp(req),
   message: {
     code: "TOO_MANY_REQUESTS",
     message: "Too many requests, please try again later",
@@ -17,6 +37,7 @@ export const authRateLimiter = rateLimit({
 export const apiRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100, // 100 requests per minute per IP
+  keyGenerator: (req: Request) => getClientIp(req),
   message: {
     code: "TOO_MANY_REQUESTS",
     message: "Too many requests, please try again later",
@@ -35,10 +56,11 @@ export const chatRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 
-  // Use user ID from route params as key
+  // Use user ID from body if available, otherwise IP
   keyGenerator: (req: Request) => {
-    const userId = req.params.userId;
-    return userId || req.ip || "anonymous";
+    const userId = req.body?.user_id;
+    if (userId) return `user:${userId}`;
+    return getClientIp(req);
   },
 
   // Custom handler for rate limit exceeded
@@ -68,7 +90,8 @@ export const mcpRateLimiter = rateLimit({
 
   keyGenerator: (req: Request) => {
     const userId = req.body?.user_id;
-    return userId || req.ip || "anonymous";
+    if (userId) return `mcp:${userId}`;
+    return getClientIp(req);
   },
 
   handler: (req: Request, res: Response) => {
