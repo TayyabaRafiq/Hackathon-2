@@ -29,14 +29,10 @@ export async function proxyChatToAIService(
     });
 
     if (!response.ok || !response.body) {
-      throw new Error("AI Service error");
+      throw new Error(`AI Service error: ${response.status}`);
     }
 
     // Forward SSE stream directly to frontend
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
     response.body.on("data", (chunk: Buffer) => {
       res.write(chunk.toString());
     });
@@ -44,9 +40,15 @@ export async function proxyChatToAIService(
     response.body.on("end", () => {
       res.end();
     });
+
+    response.body.on("error", (err: Error) => {
+      console.error("[AI Proxy] Stream error:", err);
+      res.end();
+    });
+
   } catch (error) {
     console.error("❌ AI Service Proxy Error:", error);
-    res.write(`event: error\ndata: AI service unavailable\n\n`);
+    res.write(`data: ${JSON.stringify({ type: "error", message: "AI service unavailable", code: "AI_SERVICE_ERROR" })}\n\n`);
     res.end();
   }
 }

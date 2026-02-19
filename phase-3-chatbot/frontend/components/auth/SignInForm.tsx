@@ -69,8 +69,6 @@ export function SignInForm() {
       password: values.password,
     });
 
-    console.log("Sign in result:", result);
-
     if (result?.error) {
       setSubmitError(result.error.message || "Invalid email or password");
       setIsSubmitting(false);

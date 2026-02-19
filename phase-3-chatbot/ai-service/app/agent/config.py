@@ -18,15 +18,14 @@ if not COHERE_API_KEY:
 # Options:
 # - "command-r": 35B params, 128K context, $0.15/$0.60 per 1M tokens, faster, lower cost
 # - "command-r-plus": 104B params, 128K context, $3.00/$15.00 per 1M tokens, higher quality
-COHERE_MODEL: Literal["command-r", "command-r-plus"] = os.getenv(
-    "COHERE_MODEL", "command-r"
-)
+COHERE_MODEL: str = os.getenv("COHERE_MODEL", "command-a-03-2025")
 
 # Validate model selection
-if COHERE_MODEL not in ["command-r", "command-r-plus"]:
+VALID_MODELS = ["command-r-plus", "command-r7b-12-2024", "command-a-03-2025", "command-r-08-2024"]
+if COHERE_MODEL not in VALID_MODELS:
     raise ValueError(
         f"Invalid COHERE_MODEL: {COHERE_MODEL}. "
-        "Must be 'command-r' or 'command-r-plus'"
+        f"Must be one of: {VALID_MODELS}"
     )
 
 # Cohere API Base URL

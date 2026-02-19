@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, X } from "react-icons/fi";
+import { FiMessageCircle, FiX } from "react-icons/fi";
 import ChatWindow from "./ChatWindow";
 
 /**
@@ -27,7 +27,7 @@ export default function ChatbotIcon() {
       {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
-        className={`fixed bottom-4 right-4 z-50 p-4 rounded-full shadow-lg transition-all duration-300 ${
+        className={`fixed bottom-4 right-4 z-[9999] p-4 rounded-full shadow-lg transition-all duration-300 ${
           isOpen
             ? "bg-red-500 hover:bg-red-600"
             : "bg-blue-500 hover:bg-blue-600"
@@ -36,7 +36,7 @@ export default function ChatbotIcon() {
         }`}
         aria-label={isOpen ? "Close chat" : "Open chat"}
       >
-        {isOpen ? <X size={24} /> : <MessageCircle size={24} />}
+        {isOpen ? <FiX size={24} /> : <FiMessageCircle size={24} />}
       </button>
     </>
   );
