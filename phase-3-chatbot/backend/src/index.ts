@@ -13,9 +13,14 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // CORS configuration - allow both port 3000 and 3001 for development
+// Support localhost, 127.0.0.1, and network IP
 const allowedOrigins = [
   process.env.CORS_ORIGIN || "http://localhost:3000",
   "http://localhost:3001",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3001",
+  "http://192.168.100.160:3000",
+  "http://192.168.100.160:3001",
 ];
 app.use(
   cors({
@@ -30,6 +35,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    exposedHeaders: ["Set-Cookie"],
   })
 );
 

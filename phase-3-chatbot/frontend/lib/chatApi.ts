@@ -3,7 +3,8 @@
  * Handles communication with backend chat endpoints
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+// Remove /api from URL since endpoints already include it
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace("/api", "");
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -95,7 +96,8 @@ export async function sendMessage(
   onError: (error: string, code: string) => void
 ): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/chat/${userId}`, {
+    const url = `${API_BASE_URL}/api/chat/${userId}`;
+    const response = await fetch(url, {
       method: "POST",
       credentials: "include",
       headers: {

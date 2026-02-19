@@ -12,7 +12,7 @@ import {
   TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import { X, Plus } from "react-icons/fi";
+import { FiX, FiPlus } from "react-icons/fi";
 import {
   fetchConversationHistory,
   fetchConversationMessages,
@@ -221,7 +221,7 @@ function ChatWindow({ onClose }: ChatWindowProps) {
       {/* Header */}
       <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <Avatar src="/bot-avatar.png" name="Todo Assistant" size="sm" />
+          <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-lg">🤖</div>
           <div>
             <h3 className="font-semibold">Todo Assistant</h3>
             <p className="text-xs opacity-80">AI-powered task management</p>
@@ -240,10 +240,10 @@ function ChatWindow({ onClose }: ChatWindowProps) {
             className="p-2 hover:bg-blue-600 rounded"
             title="New conversation"
           >
-            <Plus size={18} />
+            <FiPlus size={18} />
           </button>
           <button onClick={onClose} className="p-2 hover:bg-blue-600 rounded">
-            <X size={20} />
+            <FiX size={20} />
           </button>
         </div>
       </div>
@@ -307,7 +307,7 @@ function ChatWindow({ onClose }: ChatWindowProps) {
                     }}
                   >
                     {msg.role === "assistant" && (
-                      <Avatar src="/bot-avatar.png" name="Assistant" size="sm" />
+                      <Avatar src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%233B82F6'/%3E%3Ctext x='20' y='28' text-anchor='middle' font-size='18' fill='white'%3E🤖%3C/text%3E%3C/svg%3E" name="Assistant" size="sm" />
                     )}
                   </Message>
                 ))

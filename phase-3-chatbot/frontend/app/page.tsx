@@ -130,7 +130,7 @@ export default function LandingPage() {
       <footer className="border-t border-neutral-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           <p className="text-center text-sm text-neutral-500">
-            TodoFlow &mdash; A Phase 2 demonstration project
+            TodoFlow &mdash; AI-Powered Task Management (Phase 3)
           </p>
         </div>
       </footer>

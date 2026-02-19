@@ -80,7 +80,6 @@ async def run_agent_with_streaming(
                 preamble=SYSTEM_PROMPT,
                 chat_history=chat_history,
                 tools=tools,
-                max_turns=MAX_AGENT_TURNS,
             )
 
             # Variables to track tool calls
@@ -151,37 +150,24 @@ async def run_agent_with_streaming(
             # Success - exit retry loop
             return
 
-        except cohere.errors.TooManyRequestsError as e:
-            # Rate limit error - retry with backoff
-            if attempt < MAX_RETRIES - 1:
-                await asyncio.sleep(RETRY_DELAYS[attempt])
-                continue
-            else:
-                yield {
-                    "type": "error",
-                    "message": "Rate limit exceeded. Please try again in a moment.",
-                    "code": "RATE_LIMIT",
-                }
-                return
-
-        except cohere.errors.CohereAPIError as e:
-            # Cohere API error - retry
-            if attempt < MAX_RETRIES - 1:
-                await asyncio.sleep(RETRY_DELAYS[attempt])
-                continue
-            else:
-                yield {
-                    "type": "error",
-                    "message": "AI service error. Please try again.",
-                    "code": "COHERE_API_ERROR",
-                }
-                return
-
         except Exception as e:
-            # Unexpected error
-            yield {
-                "type": "error",
-                "message": f"Unexpected error: {str(e)}",
-                "code": "INTERNAL_ERROR",
-            }
-            return
+            error_str = str(e).lower()
+            # Rate limit error - retry with backoff
+            if "rate limit" in error_str or "too many requests" in error_str or "429" in error_str:
+                if attempt < MAX_RETRIES - 1:
+                    await asyncio.sleep(RETRY_DELAYS[attempt])
+                    continue
+                else:
+                    yield {
+                        "type": "error",
+                        "message": "Rate limit exceeded. Please try again in a moment.",
+                        "code": "RATE_LIMIT",
+                    }
+                    return
+            else:
+                yield {
+                    "type": "error",
+                    "message": f"AI service error: {str(e)}",
+                    "code": "INTERNAL_ERROR",
+                }
+                return
