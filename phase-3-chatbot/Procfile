@@ -1,0 +1,1 @@
+web: cd phase-3-chatbot/backend && npm run db:migrate && npm start
