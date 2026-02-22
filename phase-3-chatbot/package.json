@@ -1,0 +1,10 @@
+{
+  "name": "todoflow-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd phase-3-chatbot/backend && npm ci && npm run build",
+    "start": "cd phase-3-chatbot/backend && npm start",
+    "db:migrate": "cd phase-3-chatbot/backend && npm run db:migrate"
+  }
+}
