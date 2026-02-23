@@ -1,12 +1,12 @@
 import { Router, Request, Response } from "express";
-import { setSSEHeaders, writeSSEError, endSSEStream } from "../lib/sseStreaming";
+import { setSSEHeaders, writeSSEError, endSSEStream } from "../lib/sseStreaming.js";
 import {
   getUserConversations,
   verifyConversationOwnership,
   loadConversationContext,
-} from "../services/conversationService";
-import { auth } from "../auth";
-import { chatRateLimiter } from "../middleware/rateLimit";
+} from "../services/conversationService.js";
+import { auth } from "../auth.js";
+import { chatRateLimiter } from "../middleware/rateLimit.js";
 
 const router = Router();
 
@@ -51,16 +51,16 @@ router.post("/api/chat/:userId", chatRateLimiter, async (req: Request, res: Resp
       conversationContext = await loadConversationContext(conversationIdToUse, 50);
     } else {
       // Create new conversation
-      const { createConversation, saveMessage } = await import("../services/conversationService");
+      const { createConversation, saveMessage } = await import("../services/conversationService.js");
       conversationIdToUse = await createConversation(userId, message);
     }
 
     // Save user message to database
-    const { saveMessage } = await import("../services/conversationService");
+    const { saveMessage } = await import("../services/conversationService.js");
     await saveMessage(conversationIdToUse, userId, "user", message);
 
     // Proxy to AI service with SSE forwarding
-    const { proxyChatToAIService } = await import("../services/aiServiceClient");
+    const { proxyChatToAIService } = await import("../services/aiServiceClient.js");
 
     // Set up SSE streaming
     setSSEHeaders(res);
@@ -177,6 +177,7 @@ router.get("/api/conversations/:userId", async (req: Request, res: Response) => 
 router.get("/api/conversations/:userId/:conversationId/messages", async (req: Request, res: Response) => {
   try {
     const { userId, conversationId } = req.params;
+    const conversationIdStr = Array.isArray(conversationId) ? conversationId[0] : conversationId;
 
     // Validate session (Better Auth)
     const session = await auth.api.getSession({ headers: req.headers });
@@ -185,13 +186,13 @@ router.get("/api/conversations/:userId/:conversationId/messages", async (req: Re
     }
 
     // Verify conversation ownership
-    const isOwner = await verifyConversationOwnership(conversationId, userId);
+    const isOwner = await verifyConversationOwnership(conversationIdStr, userId);
     if (!isOwner) {
       return res.status(404).json({ error: "Conversation not found" });
     }
 
     // Load conversation context
-    const context = await loadConversationContext(conversationId, 50);
+    const context = await loadConversationContext(conversationIdStr, 50);
 
     res.json({
       conversationId: context.conversationId,

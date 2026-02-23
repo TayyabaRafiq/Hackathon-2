@@ -5,7 +5,7 @@ import {
   UpdateTaskInput,
   CompleteTaskInput,
   DeleteTaskInput,
-} from "../schemas/mcpTools";
+} from "../schemas/mcpTools.js";
 import {
   ToolResponse,
   AddTaskData,
@@ -14,7 +14,7 @@ import {
   CompleteTaskData,
   DeleteTaskData,
   TaskData,
-} from "../types/mcpTools";
+} from "../types/mcpTools.js";
 
 const prisma = new PrismaClient();
 
@@ -22,15 +22,15 @@ const prisma = new PrismaClient();
  * Authorization Helper: Verify user ownership
  * CRITICAL: All MCP tools MUST call this before database operations
  */
-export function verifyUserOwnership(
+export function verifyUserOwnership<T>(
   requestUserId: string,
   sessionUserId: string
-): ToolResponse<null> | null {
+): ToolResponse<T> | null {
   if (requestUserId !== sessionUserId) {
     return {
       success: false,
       error: "Unauthorized: Cannot access other users' tasks",
-    };
+    } as ToolResponse<T>;
   }
   return null; // Authorization passed
 }
@@ -45,7 +45,7 @@ export async function addTask(
 ): Promise<ToolResponse<AddTaskData>> {
   try {
     // CRITICAL: Verify user ownership
-    const authError = verifyUserOwnership(input.user_id, sessionUserId);
+    const authError = verifyUserOwnership<AddTaskData>(input.user_id, sessionUserId);
     if (authError) return authError;
 
     // Create task via Prisma ORM (SQL injection safe)
@@ -83,7 +83,7 @@ export async function listTasks(
 ): Promise<ToolResponse<ListTasksData>> {
   try {
     // CRITICAL: Verify user ownership
-    const authError = verifyUserOwnership(input.user_id, sessionUserId);
+    const authError = verifyUserOwnership<ListTasksData>(input.user_id, sessionUserId);
     if (authError) return authError;
 
     // Build query filters
@@ -147,7 +147,7 @@ export async function updateTask(
 ): Promise<ToolResponse<UpdateTaskData>> {
   try {
     // CRITICAL: Verify user ownership
-    const authError = verifyUserOwnership(input.user_id, sessionUserId);
+    const authError = verifyUserOwnership<UpdateTaskData>(input.user_id, sessionUserId);
     if (authError) return authError;
 
     // Verify task exists and belongs to user
@@ -214,7 +214,7 @@ export async function completeTask(
 ): Promise<ToolResponse<CompleteTaskData>> {
   try {
     // CRITICAL: Verify user ownership
-    const authError = verifyUserOwnership(input.user_id, sessionUserId);
+    const authError = verifyUserOwnership<CompleteTaskData>(input.user_id, sessionUserId);
     if (authError) return authError;
 
     // Verify task exists and belongs to user
@@ -275,7 +275,7 @@ export async function deleteTask(
 ): Promise<ToolResponse<DeleteTaskData>> {
   try {
     // CRITICAL: Verify user ownership
-    const authError = verifyUserOwnership(input.user_id, sessionUserId);
+    const authError = verifyUserOwnership<DeleteTaskData>(input.user_id, sessionUserId);
     if (authError) return authError;
 
     // Verify task exists and belongs to user
