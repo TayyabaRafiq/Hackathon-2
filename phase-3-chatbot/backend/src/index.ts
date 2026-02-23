@@ -1,4 +1,8 @@
-import "dotenv/config";
+// Load .env only in development (Railway provides env vars directly)
+if (process.env.NODE_ENV !== "production") {
+  await import("dotenv/config");
+}
+
 import express from "express";
 import cors from "cors";
 import { toNodeHandler } from "better-auth/node";
@@ -13,9 +17,10 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // CORS configuration - allow both port 3000 and 3001 for development
-// Support localhost, 127.0.0.1, and network IP
+// Support localhost, 127.0.0.1, network IP, and Railway backend domain
 const allowedOrigins = [
   process.env.CORS_ORIGIN || "http://localhost:3000",
+  "https://fabulous-delight-production-c710.up.railway.app", // Railway backend
   "http://localhost:3001",
   "http://127.0.0.1:3000",
   "http://127.0.0.1:3001",
