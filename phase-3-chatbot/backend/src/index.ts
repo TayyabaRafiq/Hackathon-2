@@ -79,8 +79,8 @@ app.use("/mcp", mcpRouter);
 // Error handler (must be last)
 app.use(errorHandler);
 
-// Bind to localhost explicitly for Windows dev environment
-const HOST = "127.0.0.1";
+// Bind to 0.0.0.0 for production (Railway), 127.0.0.1 for local dev
+const HOST = process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1";
 app.listen(Number(PORT), HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
