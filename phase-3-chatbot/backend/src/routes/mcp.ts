@@ -5,15 +5,15 @@ import {
   UpdateTaskInputSchema,
   CompleteTaskInputSchema,
   DeleteTaskInputSchema,
-} from "../schemas/mcpTools";
+} from "../schemas/mcpTools.js";
 import {
   addTask,
   listTasks,
   updateTask,
   completeTask,
   deleteTask,
-} from "../services/mcpTools";
-import { mcpRateLimiter } from "../middleware/rateLimit";
+} from "../services/mcpTools.js";
+import { mcpRateLimiter } from "../middleware/rateLimit.js";
 
 const router = Router();
 
