@@ -48,5 +48,5 @@ ENV NODE_ENV=production
 # Expose port
 EXPOSE 7860
 
-# Run database migration and start server
-CMD npx prisma migrate deploy && npm start
+# Sync database schema and start server
+CMD npx prisma db push --accept-data-loss --skip-generate && npm start
