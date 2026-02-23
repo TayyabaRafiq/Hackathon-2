@@ -4,7 +4,7 @@ import { prisma } from "./lib/prisma.js";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: "sqlite",
+    provider: "postgresql", // Railway uses PostgreSQL
   }),
   basePath: "/api/auth",
   emailAndPassword: {

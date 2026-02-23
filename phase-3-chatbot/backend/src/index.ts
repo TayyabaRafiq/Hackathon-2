@@ -84,11 +84,27 @@ app.use("/mcp", mcpRouter);
 // Error handler (must be last)
 app.use(errorHandler);
 
+// Global error handlers for Railway
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
+});
+
 // Bind to 0.0.0.0 for production (Railway), 127.0.0.1 for local dev
 const HOST = process.env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1";
-app.listen(Number(PORT), HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+const server = app.listen(Number(PORT), HOST, () => {
+  console.log(`✅ Server running on http://${HOST}:${PORT}`);
+  console.log(`✅ Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`✅ Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+});
+
+server.on('error', (error) => {
+  console.error('❌ Server error:', error);
+  process.exit(1);
 });
 
 export default app;
