@@ -16,6 +16,7 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [
     process.env.CORS_ORIGIN || "http://localhost:3000",
+    "https://hackathon-2-b866.vercel.app", // Production frontend
     "http://localhost:3001", // fallback port
     "http://127.0.0.1:3000",
     "http://127.0.0.1:3001",
@@ -29,8 +30,10 @@ export const auth = betterAuth({
       maxAge: 7 * 24 * 60 * 60, // Match session expiry
     },
     cookie: {
-      secure: false, // MUST be false for localhost
-      sameSite: "lax",
+      // Use secure cookies in production (HTTPS), false for localhost
+      secure: process.env.NODE_ENV === "production",
+      // Use "none" for cross-domain in production, "lax" for localhost
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       // Don't set domain - let browser handle it automatically
     },
   },

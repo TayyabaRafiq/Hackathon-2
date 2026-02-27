@@ -17,9 +17,10 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // CORS configuration - allow both port 3000 and 3001 for development
-// Support localhost, 127.0.0.1, network IP, and Railway backend domain
+// Support localhost, 127.0.0.1, network IP, production frontend, and Railway backend
 const allowedOrigins = [
   process.env.CORS_ORIGIN || "http://localhost:3000",
+  "https://hackathon-2-b866.vercel.app", // Production Vercel frontend
   "https://fabulous-delight-production-c710.up.railway.app", // Railway backend
   "http://localhost:3001",
   "http://127.0.0.1:3000",
