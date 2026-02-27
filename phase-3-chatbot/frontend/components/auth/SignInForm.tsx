@@ -18,6 +18,8 @@ interface FormErrors {
 }
 
 export function SignInForm() {
+  console.log("🔵 SignInForm component loaded - VERSION 2.0");
+
   const router = useRouter();
   const [values, setValues] = useState<FormValues>({
     email: "",
