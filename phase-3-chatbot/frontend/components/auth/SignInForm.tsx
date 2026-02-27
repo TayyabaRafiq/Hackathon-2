@@ -50,12 +50,25 @@ export function SignInForm() {
   };
 
  const handleSubmit = async (e: FormEvent) => {
+  console.log("🔴 handleSubmit CALLED!");
+
   e.preventDefault();
   e.stopPropagation();
 
+  console.log("🔴 After preventDefault");
+
   setSubmitError(null);
 
-  if (!validateForm()) return;
+  console.log("🔴 About to validate form");
+  const isValid = validateForm();
+  console.log("🔴 Form validation result:", isValid);
+
+  if (!isValid) {
+    console.log("🔴 Form invalid, stopping");
+    return;
+  }
+
+  console.log("🔴 Form valid, proceeding to submit");
 
   setIsSubmitting(true);
 
@@ -168,6 +181,7 @@ export function SignInForm() {
         className="w-full"
         isLoading={isSubmitting}
         disabled={isSubmitting}
+        onClick={() => console.log("🟡 Sign In button clicked!")}
       >
         Sign In
       </Button>
