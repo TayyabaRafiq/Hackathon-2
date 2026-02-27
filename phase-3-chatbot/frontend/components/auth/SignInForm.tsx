@@ -109,12 +109,20 @@ export function SignInForm() {
     console.log("🔐 [SignIn] User data:", result.data || result);
     console.log("🔐 [SignIn] 🚀 Redirecting to /dashboard...");
 
-    setIsSubmitting(false);
+    // Small delay to ensure session is persisted
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Force hard redirect to ensure session is loaded
-    console.log("🔐 [SignIn] 🔄 Executing window.location.href...");
-    window.location.href = "/dashboard";
-    console.log("🔐 [SignIn] ⚠️ This line should not appear if redirect worked");
+    console.log("🔐 [SignIn] 🔄 Now executing redirect...");
+
+    // Try router.push first (Next.js way)
+    try {
+      await router.push("/dashboard");
+      console.log("🔐 [SignIn] ✅ Router.push completed");
+    } catch (e) {
+      console.error("🔐 [SignIn] ❌ Router.push failed:", e);
+      // Fallback to window.location
+      window.location.replace("/dashboard");
+    }
 
   } catch (error) {
     console.error("🔐 [SignIn] Exception caught:", error);
