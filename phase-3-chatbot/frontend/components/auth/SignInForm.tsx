@@ -49,6 +49,8 @@ export function SignInForm() {
 
  const handleSubmit = async (e: FormEvent) => {
   e.preventDefault();
+  e.stopPropagation();
+
   setSubmitError(null);
 
   if (!validateForm()) return;
@@ -64,30 +66,43 @@ export function SignInForm() {
   try {
     const { signIn } = await import("@/lib/auth");
 
-    console.log("Attempting sign in with:", values.email);
+    console.log("🔐 [SignIn] Starting sign in for:", values.email);
     const result = await signIn.email({
       email: values.email,
       password: values.password,
     });
 
-    console.log("Sign in result:", result);
+    console.log("🔐 [SignIn] Raw result:", JSON.stringify(result, null, 2));
 
+    // Better Auth can return error in result.error or result itself might be an error
     if (result?.error) {
-      console.error("Sign in error:", result.error);
+      console.error("🔐 [SignIn] Error in result.error:", result.error);
       setSubmitError(result.error.message || "Invalid email or password");
       setIsSubmitting(false);
       return;
     }
 
-    // Force redirect even if result format is unexpected
-    console.log("Sign in successful, redirecting to dashboard");
+    // Check if result has data property (Better Auth response format)
+    if (result?.data === null || result?.data === undefined) {
+      console.error("🔐 [SignIn] No data in result, treating as error");
+      setSubmitError("Sign in failed. Please try again.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    console.log("🔐 [SignIn] ✅ Sign in successful!");
+    console.log("🔐 [SignIn] User data:", result.data || result);
+    console.log("🔐 [SignIn] 🚀 Redirecting to /dashboard...");
+
     setIsSubmitting(false);
 
-    // Use window.location for guaranteed redirect
+    // Force hard redirect to ensure session is loaded
+    console.log("🔐 [SignIn] 🔄 Executing window.location.href...");
     window.location.href = "/dashboard";
+    console.log("🔐 [SignIn] ⚠️ This line should not appear if redirect worked");
 
   } catch (error) {
-    console.error("Sign in exception:", error);
+    console.error("🔐 [SignIn] Exception caught:", error);
     setSubmitError("An unexpected error occurred. Please try again.");
     setIsSubmitting(false);
   }
