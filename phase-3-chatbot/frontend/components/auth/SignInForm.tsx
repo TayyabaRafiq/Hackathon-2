@@ -64,22 +64,30 @@ export function SignInForm() {
   try {
     const { signIn } = await import("@/lib/auth");
 
+    console.log("Attempting sign in with:", values.email);
     const result = await signIn.email({
       email: values.email,
       password: values.password,
     });
 
+    console.log("Sign in result:", result);
+
     if (result?.error) {
+      console.error("Sign in error:", result.error);
       setSubmitError(result.error.message || "Invalid email or password");
       setIsSubmitting(false);
       return;
     }
 
+    // Force redirect even if result format is unexpected
+    console.log("Sign in successful, redirecting to dashboard");
     setIsSubmitting(false);
-    router.push("/dashboard");
+
+    // Use window.location for guaranteed redirect
+    window.location.href = "/dashboard";
 
   } catch (error) {
-    console.error(error);
+    console.error("Sign in exception:", error);
     setSubmitError("An unexpected error occurred. Please try again.");
     setIsSubmitting(false);
   }
