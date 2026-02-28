@@ -38,15 +38,27 @@ async function proxyRequest(request: NextRequest, authPath: string[]) {
     }
 
     // Forward the request to backend
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Forward important headers
+    const headersToForward = ["cookie", "origin", "referer", "user-agent"];
+    headersToForward.forEach((headerName) => {
+      const value = request.headers.get(headerName);
+      if (value) {
+        headers[headerName] = value;
+      }
+    });
+
+    // If no origin header, set it to the frontend URL
+    if (!headers["origin"]) {
+      headers["origin"] = request.nextUrl.origin;
+    }
+
     const response = await fetch(fullUrl, {
       method: request.method,
-      headers: {
-        "Content-Type": "application/json",
-        // Forward cookies from the original request
-        ...(request.headers.get("cookie") && {
-          cookie: request.headers.get("cookie")!,
-        }),
-      },
+      headers,
       body,
       credentials: "include",
     });
