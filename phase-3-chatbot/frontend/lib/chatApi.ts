@@ -3,8 +3,8 @@
  * Handles communication with backend chat endpoints
  */
 
-// Remove /api from URL since endpoints already include it
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace("/api", "");
+// Use API_URL as-is (for proxy: /api/proxy, for direct: http://localhost:8000)
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface ChatMessage {
   role: "user" | "assistant";
@@ -27,7 +27,7 @@ export async function fetchConversationHistory(
   userId: string
 ): Promise<Conversation[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/conversations/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/conversations/${userId}`, {
       credentials: "include", // Send cookies for Better Auth
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export async function fetchConversationMessages(
 ): Promise<ChatMessage[]> {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/api/conversations/${userId}/${conversationId}/messages`,
+      `${API_BASE_URL}/conversations/${userId}/${conversationId}/messages`,
       {
         credentials: "include",
         headers: {
@@ -96,7 +96,7 @@ export async function sendMessage(
   onError: (error: string, code: string) => void
 ): Promise<void> {
   try {
-    const url = `${API_BASE_URL}/api/chat/${userId}`;
+    const url = `${API_BASE_URL}/chat/${userId}`;
     const response = await fetch(url, {
       method: "POST",
       credentials: "include",
