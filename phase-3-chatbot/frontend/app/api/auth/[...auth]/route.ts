@@ -5,16 +5,18 @@ const BACKEND_URL = process.env.BACKEND_URL || "https://tayyabaali-phase3-hack2-
 // Proxy all auth requests to the backend
 export async function GET(
   request: NextRequest,
-  { params }: { params: { auth: string[] } }
+  { params }: { params: Promise<{ auth: string[] }> }
 ) {
-  return proxyRequest(request, params.auth);
+  const { auth } = await params;
+  return proxyRequest(request, auth);
 }
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { auth: string[] } }
+  { params }: { params: Promise<{ auth: string[] }> }
 ) {
-  return proxyRequest(request, params.auth);
+  const { auth } = await params;
+  return proxyRequest(request, auth);
 }
 
 async function proxyRequest(request: NextRequest, authPath: string[]) {
